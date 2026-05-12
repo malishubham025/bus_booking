@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
-import javax.lang.model.element.NestingKind;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,23 +13,21 @@ import java.util.List;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
 )
-
-public class Seat {
+public class Trip {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    int seatNumber;
+    LocalDate departureTime;
 
-
-    @Version
-    private int version;
-    @ManyToOne
+    @ManyToOne()
+    @JoinColumn(name = "bus_id")
     Bus bus;
 
 
-    @OneToMany(mappedBy = "seat")
-    List<SeatBooking> seatBookings=new ArrayList<>();
+
+    @OneToMany(mappedBy = "trip")
+    List<SeatBooking>seatBookings=new ArrayList<>();
 
     public List<SeatBooking> getSeatBookings() {
         return seatBookings;
@@ -41,25 +39,25 @@ public class Seat {
 
     public void addSeatBooking(SeatBooking seatBooking){
         this.seatBookings.add(seatBooking);
-        seatBooking.setSeat(this);
+        seatBooking.setTrip(this);
     }
     public String getId() {
         return id;
     }
 
+
+
     public void setId(String id) {
         this.id = id;
     }
 
-    public int getSeatNumber() {
-        return seatNumber;
+    public LocalDate getDepartureTime() {
+        return departureTime;
     }
 
-    public void setSeatNumber(int seatNumber) {
-        this.seatNumber = seatNumber;
+    public void setDepartureTime(LocalDate departureTime) {
+        this.departureTime = departureTime;
     }
-
-
 
     public Bus getBus() {
         return bus;
@@ -68,6 +66,4 @@ public class Seat {
     public void setBus(Bus bus) {
         this.bus = bus;
     }
-
-
 }

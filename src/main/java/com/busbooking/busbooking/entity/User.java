@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerator;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,7 +25,7 @@ public class User {
     String role;
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "user",orphanRemoval = true)
-    List<Booking> bookings;
+    List<SeatBooking> bookings=new ArrayList<>();
 
     public String getId() {
         return id;
@@ -66,13 +67,17 @@ public class User {
         this.role = role;
     }
 
-    public List<Booking> getBookings() {
+    public List<SeatBooking> getBookings() {
         return bookings;
     }
 
-    public void setBookings(List<Booking> bookings) {
+    public void addBooking(SeatBooking booking){
+        this.getBookings().add(booking);
+        booking.setUser(this);
+    }
+    public void setBookings(List<SeatBooking> bookings) {
         this.bookings = bookings;
-        for(Booking booking: bookings){
+        for(SeatBooking booking: bookings){
             booking.setUser(this);
         }
     }
