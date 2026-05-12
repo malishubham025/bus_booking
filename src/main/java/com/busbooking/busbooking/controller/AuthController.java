@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,9 +22,15 @@ public class AuthController {
         return authService.handleLogin(user,response);
     }
 
+    @PostMapping("/signup/sendOTP")
+    ResponseEntity sendOTP(@RequestBody User user,HttpServletResponse response){
+        return authService.handleOTP(user);
+    }
+
+
     @PostMapping("/signup")
-    ResponseEntity signup(@RequestBody User user,HttpServletResponse response){
-        return authService.handleSignup(user,  response);
+    ResponseEntity signup(@RequestBody User user, @RequestParam("otp") String otp, HttpServletResponse response){
+        return authService.handleSignup(otp,user,  response);
     }
 
     @PostMapping("/logout")

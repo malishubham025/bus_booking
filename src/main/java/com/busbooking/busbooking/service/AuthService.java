@@ -9,6 +9,7 @@ import com.busbooking.busbooking.securityconfig.JWTValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -39,7 +41,31 @@ public class AuthService {
 
     @Autowired
     JWTGenerator generator;
-    public ResponseEntity handleSignup(User user, HttpServletResponse response){
+    @Autowired
+    RestTemplate restTemplate;
+    public ResponseEntity handleOTP(User user){
+        String email=user.getEmail();
+        if (email==null){
+            return new ResponseEntity("Email can't be null",HttpStatusCode.valueOf(400));
+        }
+        String url="http://localhost:8081/setOTP?userId="+email+"&time=2";
+        return restTemplate.exchange(url,HttpMethod.POST,null,Integer.class);
+    }
+
+    public ResponseEntity handleSignup(String otp,User user, HttpServletResponse response){
+        String email=user.getEmail();
+        if (email==null){
+            return new ResponseEntity("Email can't be null",HttpStatusCode.valueOf(400));
+        }
+        String url="http://localhost:8081/getOTP?userId="+email;
+        ResponseEntity responseEntity=restTemplate.exchange(url,HttpMethod.POST,null,String.class);
+        if(HttpStatusCode.valueOf(200)!=responseEntity.getStatusCode()){
+            return responseEntity;
+        }
+        String otpReceived=responseEntity.getBody().toString();
+        if(!otpReceived.equals(otp)){
+            return new ResponseEntity("OTP is not correct",HttpStatusCode.valueOf(400));
+        }
         UserDetails userDetails=userDetailsService.loadUserByUsername(user.getUsername());
         String password=user.getPassword();
         password=encoder.encode(password);

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.web.client.RestTemplate;
 
 import javax.sql.DataSource;
 import javax.xml.crypto.Data;
@@ -18,4 +19,9 @@ public class AppConfig {
 //        return new DataSourceTransactionManager(dataSource);
 //
 //    }
+
+    @Bean
+    RestTemplate restTemplate(){
+        return new RestTemplate();
+    }
 }
